@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.css">
+   
+</head>
+<body>
+    <div class="container">
+        <div id="loginSection" class="section">
+            <h2>Login</h2>
+            <input type="text" id="loginUsername" placeholder="Username">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button id="loginButton" onclick="login()">Login</button>
+            <button onclick="showCreateUserSection()">Create User</button>
+            <div id="userToken"></div>
+        </div>
+
+        <div id="createUserSection" class="section" style="display:none;">
+            <h2>Create User</h2>
+            <input type="text" id="createUsername" placeholder="Username">
+            <input type="password" id="createPassword" placeholder="Password">
+            <button onclick="createUser()">Create User</button>
+            <button onclick="showLoginSection()">Back to Login</button>
+        </div>
+
+        <div id="appSection" class="section" style="display:none;">
+            <h1>Database Manager</h1>
+            <button onclick="logout()">Logout</button>
+
+            <div class="section">
+                <h2>Create JSON File</h2>
+                <input type="text" id="newFileName" placeholder="Enter file name">
+                <button onclick="createJsonFile()">Create</button>
+            </div>
+
+            <div class="section">
+                <h2>JSON Files</h2>
+                <select id="jsonFiles" onchange="loadJsonData()"></select>
+                <button onclick="deleteJsonFile()">Delete Selected File</button>
+            </div>
+
+            <div class="section">
+                <h2>JSON Data</h2>
+                <div id="jsonEditorContainer">
+                    <div id="jsonEditor"></div>
+                    <button id="saveButton" onclick="saveJsonData()" style="display:none;">Save Changes</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Data Table</h2>
+                <input type="text" id="filterInput" placeholder="Enter filter text" oninput="filterTable()">
+                <div id="jsonTable"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante para abrir el modal de ayuda -->
+    <button id="helpButton" onclick="openHelpModal()">?</button>
+
+    <!-- Modal de ayuda -->
+    <div id="helpModal">
+        <div id="helpModalContent">
+            <button id="helpModalClose" onclick="closeHelpModal()">X</button>
+            <div class="instructions">
+                <h3>Instrucciones para Usar la API</h3>
+                <p>Para usar la API desde otra página, sigue estos pasos:</p>
+                <ol>
+                    <li>
+                        <strong>Iniciar Sesión:</strong> <br>
+<strong>unando powersheell</strong>
+                        <pre> 
+
+  $headers = @{
+       "Content-Type" = "application/json"
+  }
+                            
+   $body = @{
+      "username" = "tu Usuario"
+      "password" = "Tu Password"
+   } | ConvertTo-Json
+                            
+   Invoke-WebRequest -Uri "http://localhost:3000/login" -Method POST -Headers $headers -Body $body
+                            
+                        </pre>
+                        <strong>Iniciar Sesión desde tu WEB:</strong> 
+                        <pre>
+fetch('http://localhost:3000/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username: 'tu_usuario', password: 'tu_contraseña' })
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Token:', data.token);
+    localStorage.setItem('token', data.token);
+})
+.catch(error => {
+    console.error('Error al iniciar sesión:', error);
+});
+                        </pre>
+                    </li>
+                    <li>
+                        <strong>Listar Archivos JSON:</strong>
+                        <pre>
+const token = localStorage.getItem('token');
+
+fetch('http://localhost:3000/list-json', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Archivos JSON:', data);
+})
+.catch(error => {
+    console.error('Error al listar archivos JSON:', error);
+});
+                        </pre>
+                    </li>
+                    <li>
+                        <strong>Obtener Contenido de un Archivo JSON:</strong>
+                        <pre>
+const token = localStorage.getItem('token');
+const fileName = 'nombre_del_archivo.json';
+
+fetch(`http://localhost:3000/get-json-content?fileName=${fileName}`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Contenido del archivo JSON:', data);
+})
+.catch(error => {
+    console.error('Error al obtener el contenido del archivo JSON:', error);
+});
+                        </pre>
+                    </li>
+                    <li>
+                        <strong>Crear un Archivo JSON:</strong>
+                        <pre>
+const token = localStorage.getItem('token');
+const fileName = 'nombre_del_archivo';
+
+fetch('http://localhost:3000/create-json', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ fileName })
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Archivo JSON creado:', data.message);
+})
+.catch(error => {
+    console.error('Error al crear el archivo JSON:', error);
+});
+                        </pre>
+                    </li>
+                    <li>
+                        <strong>Guardar Cambios en un Archivo JSON:</strong>
+                        <pre>
+const token = localStorage.getItem('token');
+const fileName = 'nombre_del_archivo.json';
+const content = { ... }; // Contenido del archivo JSON
+
+fetch('http://localhost:3000/save-json-content', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ fileName, content })
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Archivo JSON guardado:', data.message);
+})
+.catch(error => {
+    console.error('Error al guardar el archivo JSON:', error);
+});
+                        </pre>
+                    </li>
+                    <li>
+                        <strong>Eliminar un Archivo JSON:</strong>
+                        <pre>
+const token = localStorage.getItem('token');
+const fileName = 'nombre_del_archivo.json';
+
+fetch('http://localhost:3000/delete-json', {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ fileName })
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Archivo JSON eliminado:', data.message);
+})
+.catch(error => {
+    console.error('Error al eliminar el archivo JSON:', error);
+});
+                        </pre>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/lint/json-lint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/addon/fold/comment-fold.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
