@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "username": "kelvin",
+    "password": "$2b$10$dSTGBRIWh/eotzjkFiNxYeXAGnucPFe09gryPRzt1XaX8tMdbYOqq"
+  },
+  {
+    "id": 2,
+    "username": "Kelvin",
+    "password": "$2b$10$d9ZT0QbOiMpQzr/YPNjrVeOUBCEmMU5YwPkhnGicR7LDyFgW34xA6"
+  },
+  {
+    "id": 3,
+    "username": "Juan",
+    "password": "$2b$10$EM8UVV0Z4GXcs9kAUophU.qmERp5anurHUJT4CszJYihhdeROoVyK"
+  }
+]

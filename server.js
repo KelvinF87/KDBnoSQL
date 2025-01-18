@@ -5,8 +5,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const sqlite3 = require('sqlite3').verbose();
-const crypto = require('crypto');
 const app = express();
 const port = 3000;
 
@@ -14,39 +12,72 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
-const db = new sqlite3.Database('./database.db');
+const usersFilePath = path.join(__dirname, 'users.json');
 const SECRET_KEY = 'your_secret_key';
 
-// Crear tabla de usuarios si no existe
-db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)");
-});
-
-// Función para encriptar la clave
-function encryptKey(key, secret) {
-    const iv = crypto.randomBytes(16); // Vector de inicialización
-    const cipher = crypto.createCipheriv('aes-256-cbc', secret, iv);
-    let encrypted = cipher.update(key, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    return {
-        iv: iv.toString('hex'),
-        encryptedData: encrypted
-    };
+// Función para leer el archivo de usuarios
+function readUsersFile() {
+    if (fs.existsSync(usersFilePath)) {
+        const data = fs.readFileSync(usersFilePath, 'utf8');
+        return JSON.parse(data);
+    }
+    return [];
 }
 
-// Generar una clave de encriptación válida
-const encryptionKey = crypto.randomBytes(32);
+// Función para escribir en el archivo de usuarios
+function writeUsersFile(users) {
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf8');
+}
 
-// Clave a encriptar
-const key = 'my_super_secret_key';
+// Ruta para crear un usuario
+app.post('/create-user', (req, res) => {
+    const { username, password } = req.body;
+    const users = readUsersFile();
+    const existingUser = users.find(user => user.username === username);
+    if (existingUser) {
+        return res.status(400).json({ error: 'Username already exists' });
+    }
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const newUser = { id: users.length + 1, username, password: hashedPassword };
+    users.push(newUser);
+    writeUsersFile(users);
+    fs.mkdirSync(path.join(__dirname, 'json', newUser.id.toString()));
+    res.json({ message: 'User created successfully' });
+});
 
-// Encriptar la clave
-const encryptedKey = encryptKey(key, encryptionKey);
+// Ruta para iniciar sesión
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    const users = readUsersFile();
+    const user = users.find(user => user.username === username);
+    if (user && bcrypt.compareSync(password, user.password)) {
+        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY);
+        res.json({ token });
+    } else {
+        res.status(401).json({ message: 'Invalid credentials' });
+    }
+});
 
-// Guardar la clave encriptada en un archivo JSON
-fs.writeFileSync('superkey.json', JSON.stringify(encryptedKey, null, 2));
+// Ruta para cerrar sesión
+app.post('/logout', (req, res) => {
+    res.json({ message: 'Logout successful' });
+});
 
-console.log('Clave encriptada y guardada en superkey.json');
+// Middleware para autenticar el token
+function authenticateToken(req, res, next) {
+    const token = req.headers['authorization'];
+    if (token) {
+        jwt.verify(token, SECRET_KEY, (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+            req.user = user;
+            next();
+        });
+    } else {
+        res.sendStatus(401);
+    }
+}
 
 // Ruta para listar archivos JSON
 app.get('/list-json', authenticateToken, (req, res) => {
@@ -119,65 +150,11 @@ app.delete('/delete-json', authenticateToken, (req, res) => {
     });
 });
 
-// Ruta para crear un usuario
-app.post('/create-user', (req, res) => {
-    const { username, password } = req.body;
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const stmt = db.prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-    stmt.run(username, hashedPassword, function(err) {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        fs.mkdirSync(path.join(__dirname, 'json', this.lastID.toString()));
-        res.json({ message: 'User created successfully' });
-    });
-    stmt.finalize();
-});
-
-// Ruta para iniciar sesión
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    const stmt = db.prepare("SELECT * FROM users WHERE username = ?");
-    stmt.get(username, (err, user) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (user && bcrypt.compareSync(password, user.password)) {
-            const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY);
-            res.json({ token });
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
-        }
-    });
-    stmt.finalize();
-});
-
-// Ruta para cerrar sesión
-app.post('/logout', (req, res) => {
-    res.json({ message: 'Logout successful' });
-});
-
-// Middleware para autenticar el token
-function authenticateToken(req, res, next) {
-    const token = req.headers['authorization'];
-    if (token) {
-        jwt.verify(token, SECRET_KEY, (err, user) => {
-            if (err) {
-                return res.sendStatus(403);
-            }
-            req.user = user;
-            next();
-        });
-    } else {
-        res.sendStatus(401);
-    }
-}
-
 // Nueva ruta para servir admin/index.html
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'index.html'));
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Server running at http://localhost:${port}`);
 });

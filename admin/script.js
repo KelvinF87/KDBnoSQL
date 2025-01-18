@@ -1,8 +1,18 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://192.168.0.19:3000';
 let originalData = [];
 let modifiedData = [];
 let editor;
 let token = null;
+
+// Función para limpiar el contenido de CodeMirror
+function clearCodeMirror() {
+    if (editor) {
+        editor.setValue(''); // Limpiar el contenido del editor
+        editor.setCursor(0, 0); // Reestablecer el cursor al inicio
+       // editor.clearCodeMirror(); // Limpiar el historial de cambios
+        window.location.reload(); // Recargar la página
+    }
+}
 
 // Inicializar CodeMirror
 function initEditor() {
@@ -269,7 +279,12 @@ function login() {
         },
         body: JSON.stringify({ username, password })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Invalid credentials');
+        }
+        return response.json();
+    })
     .then(data => {
         token = data.token;
         localStorage.setItem('token', token);
@@ -294,12 +309,14 @@ function logout() {
         alert(data.message);
         token = null;
         localStorage.removeItem('token');
+        clearCodeMirror();
         showLoginSection();
     })
     .catch(error => {
         console.error('Error:', error);
     });
 }
+
 
 // Show login section
 function showLoginSection() {
