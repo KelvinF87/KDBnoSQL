@@ -6,7 +6,6 @@
     <title>Database Manager</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.css">
-   
 </head>
 <body>
     <div class="container">
@@ -23,6 +22,7 @@
             <h2>Create User</h2>
             <input type="text" id="createUsername" placeholder="Username">
             <input type="password" id="createPassword" placeholder="Password">
+            <input type="text" id="createRole" placeholder="Role (admin/user)">
             <button onclick="createUser()">Create User</button>
             <button onclick="showLoginSection()">Back to Login</button>
         </div>
@@ -73,21 +73,21 @@
                     <li>
                         <strong>Iniciar Sesión:</strong> <br>
 <strong>unando powersheell</strong>
-                        <pre> 
+                        <pre>
 
   $headers = @{
        "Content-Type" = "application/json"
   }
-                            
+
    $body = @{
       "username" = "tu Usuario"
       "password" = "Tu Password"
    } | ConvertTo-Json
-                            
+
    Invoke-WebRequest -Uri "http://localhost:3000/login" -Method POST -Headers $headers -Body $body
-                            
+
                         </pre>
-                        <strong>Iniciar Sesión desde tu WEB:</strong> 
+                        <strong>Iniciar Sesión desde tu WEB:</strong>
                         <pre>
 fetch('http://localhost:3000/login', {
     method: 'POST',

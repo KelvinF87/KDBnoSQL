@@ -9,7 +9,6 @@ function clearCodeMirror() {
     if (editor) {
         editor.setValue(''); // Limpiar el contenido del editor
         editor.setCursor(0, 0); // Reestablecer el cursor al inicio
-       // editor.clearCodeMirror(); // Limpiar el historial de cambios
         window.location.reload(); // Recargar la página
     }
 }
@@ -249,13 +248,14 @@ function deleteJsonFile() {
 function createUser() {
     const username = document.getElementById('createUsername').value;
     const password = document.getElementById('createPassword').value;
+    const role = document.getElementById('createRole').value;
     if (confirm(`Are you sure you want to create the user "${username}"?`)) {
         fetch(`${API_URL}/create-user`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password, role })
         })
         .then(response => response.json())
         .then(data => {
@@ -316,7 +316,6 @@ function logout() {
         console.error('Error:', error);
     });
 }
-
 
 // Show login section
 function showLoginSection() {

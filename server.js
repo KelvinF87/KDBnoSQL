@@ -31,14 +31,14 @@ function writeUsersFile(users) {
 
 // Ruta para crear un usuario
 app.post('/create-user', (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
     const users = readUsersFile();
     const existingUser = users.find(user => user.username === username);
     if (existingUser) {
         return res.status(400).json({ error: 'Username already exists' });
     }
     const hashedPassword = bcrypt.hashSync(password, 10);
-    const newUser = { id: users.length + 1, username, password: hashedPassword };
+    const newUser = { id: users.length + 1, username, password: hashedPassword, role };
     users.push(newUser);
     writeUsersFile(users);
     fs.mkdirSync(path.join(__dirname, 'json', newUser.id.toString()));
@@ -51,7 +51,7 @@ app.post('/login', (req, res) => {
     const users = readUsersFile();
     const user = users.find(user => user.username === username);
     if (user && bcrypt.compareSync(password, user.password)) {
-        const token = jwt.sign({ id: user.id, username: user.username }, SECRET_KEY);
+        const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, SECRET_KEY);
         res.json({ token });
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
@@ -79,8 +79,20 @@ function authenticateToken(req, res, next) {
     }
 }
 
-// Ruta para listar archivos JSON
-app.get('/list-json', authenticateToken, (req, res) => {
+// Middleware para autorizar roles
+function authorizeRole(...requiredRoles) {
+    return (req, res, next) => {
+        if (req.user && requiredRoles.includes(req.user.role)) {
+            next();
+        } else {
+            res.status(403).json({ error: 'Forbidden: You do not have permission to access this resource.' });
+        }
+    };
+}
+
+
+// Ruta para listar archivos JSON (solo para los roles admin y user)
+app.get('/list-json', authenticateToken, authorizeRole('admin', 'user'), (req, res) => {
     const userId = req.user.id;
     const jsonDirectory = path.join(__dirname, 'json', userId.toString());
     fs.readdir(jsonDirectory, (err, files) => {
@@ -92,8 +104,9 @@ app.get('/list-json', authenticateToken, (req, res) => {
     });
 });
 
-// Ruta para obtener el contenido de un archivo JSON
-app.get('/get-json-content', authenticateToken, (req, res) => {
+
+// Ruta para obtener el contenido de un archivo JSON (solo para admin)
+app.get('/get-json-content', authenticateToken, authorizeRole('admin','user'), (req, res) => {
     const userId = req.user.id;
     const fileName = req.query.fileName;
     const filePath = path.join(__dirname, 'json', userId.toString(), fileName);
@@ -110,8 +123,8 @@ app.get('/get-json-content', authenticateToken, (req, res) => {
     });
 });
 
-// Ruta para crear un archivo JSON
-app.post('/create-json', authenticateToken, (req, res) => {
+// Ruta para crear un archivo JSON (solo para admin)
+app.post('/create-json', authenticateToken, authorizeRole('admin','user'), (req, res) => {
     const userId = req.user.id;
     const { fileName } = req.body;
     const uniqueId = Math.floor(100000 + Math.random() * 900000).toString(); // ID único de 6 dígitos
@@ -124,8 +137,8 @@ app.post('/create-json', authenticateToken, (req, res) => {
     });
 });
 
-// Ruta para guardar cambios en un archivo JSON
-app.post('/save-json-content', authenticateToken, (req, res) => {
+// Ruta para guardar cambios en un archivo JSON (solo para admin)
+app.post('/save-json-content', authenticateToken, authorizeRole('admin','user'), (req, res) => {
     const userId = req.user.id;
     const { fileName, content } = req.body;
     const filePath = path.join(__dirname, 'json', userId.toString(), fileName);
@@ -137,8 +150,8 @@ app.post('/save-json-content', authenticateToken, (req, res) => {
     });
 });
 
-// Ruta para eliminar un archivo JSON
-app.delete('/delete-json', authenticateToken, (req, res) => {
+// Ruta para eliminar un archivo JSON (solo para admin)
+app.delete('/delete-json', authenticateToken, authorizeRole('admin'), (req, res) => {
     const userId = req.user.id;
     const { fileName } = req.body;
     const filePath = path.join(__dirname, 'json', userId.toString(), fileName);
