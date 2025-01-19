@@ -1,0 +1,349 @@
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+.logo-mongodb {
+  background-image: url('https://www.vectorlogo.zone/logos/mongodb/mongodb-icon.svg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  width: 100%;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+/* Login Container */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.login-box h2 {
+  text-align: center;
+}
+
+.login-box .form-group {
+  margin-bottom: 15px;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+  width: calc(100% - 12px);
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.login-box button {
+  background-color: #5cb85c;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.login-box button:hover {
+  background-color: #4cae4c;
+}
+
+/* File Manager Container */
+
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 95%;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+header .header-controls {
+  display: flex;
+  align-items: center;
+}
+
+.view-toggle button {
+  margin: 0 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.view-toggle button.active {
+  background-color: #ddd;
+}
+
+.header-controls button {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  background-color: #f44336;
+  color: #fff;
+  margin-left: 10px;
+}
+
+main.content {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  /* Prevent layout issues with file list and editor/table */
+  height: 100%;
+}
+
+aside.file-list {
+  width: 25%;
+  max-width: 300px;
+  padding-right: 15px;
+  border-right: 1px solid #eee;
+  overflow-y: auto;
+}
+
+aside.file-list h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+aside.file-list button {
+  padding: 5px;
+  background-color: #5cb85c;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+aside.file-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+aside.file-list ul li {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 2px;
+}
+
+aside.file-list ul li:hover {
+  background-color: #f0f0f0;
+}
+
+section.file-content {
+  flex-grow: 1;
+  padding: 15px;
+  overflow: hidden;
+  /* Allow inner content to scroll if needed */
+}
+
+section.file-content .file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+section.file-content .file-header h2{
+     font-size: 20px;
+   margin:0;
+}
+
+section.file-content .file-header div {
+display: flex;
+  align-items: center;
+}
+
+section.file-content .file-header button {
+  margin-left: 5px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+    background-color: #ddd;
+}
+#loadTableBtn {
+      background-color: #2196F3; /* Blue */
+      color: white;
+  }
+ #loadTableBtn:hover {
+   background-color: #1976D2;
+  }
+
+#editorView {
+  height: calc(100% - 60px);
+  overflow: auto;
+  display: block;
+}
+
+#tableView {
+  height: calc(100% - 60px);
+  overflow-x: auto;
+  display: none;
+}
+
+#editorView textarea {
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  border: 1px solid #ddd;
+  resize: none;
+  box-sizing: border-box;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+#tableView table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+#tableView th,
+#tableView td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#tableView th {
+  background-color: #f0f0f0;
+}
+
+#tableView button {
+  background-color: #f44336;
+    color: #fff;
+     border: none;
+      padding: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+}
+#tableView button:hover {
+      background-color: #d32f2f;
+}
+
+footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.type-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.type-item {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+  font-size: 12px;
+}
+
+.type-color {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.type-color.string {
+  background-color: #e91e63;
+}
+
+.type-color.number {
+  background-color: #2196f3;
+}
+
+.type-color.boolean {
+  background-color: #4caf50;
+}
+
+.type-color.array {
+  background-color: #ff9800;
+}
+
+.type-color.object {
+  background-color: #9c27b0;
+}
+
+.error-container {
+  background-color: #f8d7da;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  color: #721c24;
+}
+
+.error-container.hidden {
+  display: none;
+}
+.error-message{
+  color:red;
+  margin-top:10px;
+}
+.btns-control{
+  display: flex;
+  align-items: center;
+}
+#tokenContainer {
+  margin-top: 10px;
+ }
+ #tokenContainer p span {
+ font-size: 0.8em;
+ }
+ #toggleTokenButton {
+  background-color: #2196F3; /* Blue */
+  color: white;
+  border: none;
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;}

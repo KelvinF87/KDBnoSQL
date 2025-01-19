@@ -2,8 +2,8 @@
     {
       "id": 1,
       "username": "kelvin",
-      "password": "$2b$10$dSTGBRIWh/eotzjkFiNxYeXAGnucPFe09gryPRzt1XaX8tMdbYOqq",
-      "role": "user"
+      "password": "$2b$10$EM8UVV0Z4GXcs9kAUophU.qmERp5anurHUJT4CszJYihhdeROoVyK",
+      "role": "admin"
     },
     {
       "id": 2,

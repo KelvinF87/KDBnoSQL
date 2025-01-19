@@ -2,17 +2,18 @@
   {
     "name": "Kelvin",
     "id": 1,
-    "password": "123"
+    "password": "1234",
+    "rol": "Admin"
   },
   {
     "name": "Juan",
     "id": 2,
-    "password": "123"
+    "password": "1234"
   },
   {
-    "name": "Maria",
+    "name": "Marias",
     "id": 3,
-    "password": "123",
+    "password": "1234",
     "rol": "Admin"
   }
 ]

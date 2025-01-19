@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON File Manager</title>
+     <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.css">
+</head>
+<body>
+    <div class="container">
+          <div id="userInfo">
+            <!-- <h3>Logged in as: <span id="loggedInUsername"></span></h3> -->
+            <div id="tokenContainer" style="display: none;">
+                <p>Token: <span id="myToken"></span></p>
+            </div>
+            <button id="toggleTokenButton">👁️</button>
+        </div>
+        <header>
+            <h1>JSON File Manager</h1>
+            <div class="header-controls">
+                <div class="view-toggle">
+                    <button id="editorViewBtn" class="active">Editor</button>
+                    <button id="tableViewBtn">Table</button>
+                </div>
+                <button id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <div id="errorContainer" class="error-container hidden">
+            <p id="errorMessage"></p>
+        </div>
+
+        <main class="content">
+            <aside class="file-list">
+                <h2>Files <button id="createFileBtn">+</button></h2>
+                <ul id="fileList"></ul>
+            </aside>
+
+            <section class="file-content">
+                <div class="file-header">
+                    <h2 id="selectedFileName">Select a file</h2>
+                    <div class="btns-control">
+                        <button id="saveBtn" disabled>Save</button>
+                        <button id="deleteBtn" disabled>Delete</button>
+                        <button id="formatBtn" disabled>Format JSON</button>
+                           <button id="loadTableBtn" >Load JSON</button>
+                    </div>
+                </div>
+                <div id="editorView">
+                    <textarea id="jsonEditor" placeholder="Select a file to view content"></textarea>
+                </div>
+                <div id="tableView" class="hidden">
+                    <table>
+                        <thead id="jsonTableHeader">
+                            <!-- Headers will be dynamically generated here -->
+                        </thead>
+                        <tbody id="jsonTableBody">
+                            <!-- Rows will be dynamically generated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="type-legend">
+                <div class="type-item">
+                    <span class="type-color string"></span>
+                    <span>String</span>
+                </div>
+                <div class="type-item">
+                    <span class="type-color number"></span>
+                    <span>Number</span>
+                </div>
+                <div class="type-item">
+                    <span class="type-color boolean"></span>
+                    <span>Boolean</span>
+                </div>
+                <div class="type-item">
+                    <span class="type-color array"></span>
+                    <span>Array</span>
+                </div>
+                <div class="type-item">
+                    <span class="type-color object"></span>
+                    <span>Object</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/mode/javascript/javascript.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

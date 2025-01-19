@@ -126,10 +126,10 @@ app.get('/get-json-content', authenticateToken, authorizeRole('admin','user'), (
 // Ruta para crear un archivo JSON (solo para admin)
 app.post('/create-json', authenticateToken, authorizeRole('admin','user'), (req, res) => {
     const userId = req.user.id;
-    const { fileName } = req.body;
+    const { fileName,content } = req.body;
     const uniqueId = Math.floor(100000 + Math.random() * 900000).toString(); // ID único de 6 dígitos
     const filePath = path.join(__dirname, 'json', userId.toString(), `${uniqueId}_${fileName}.json`);
-    fs.writeFile(filePath, JSON.stringify({}), (err) => {
+    fs.writeFile(filePath, JSON.stringify(content), (err) => {
         if (err) {
             return res.status(500).json({ error: 'Unable to create file: ' + err });
         }
@@ -166,6 +166,10 @@ app.delete('/delete-json', authenticateToken, authorizeRole('admin'), (req, res)
 // Nueva ruta para servir admin/index.html
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+ // Route to handle direct requests to /dashboard.html
+app.get('/dashboard.html', (req, res) => {
+     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
 app.listen(port, '0.0.0.0', () => {
